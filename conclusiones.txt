@@ -1,0 +1,62 @@
+CONCLUSIONES Y RECOMENDACIONES 
+RESUMEN
+- Se implementaron pruebas de API (PetStore) y E2E (SauceDemo) usando Cypress en un solo repo para mantener simpleza y menos dependecias.
+- Objetivo principal: cubrir un flujo feliz end-to-end y un set basico de endpoints REST con validaciones claras y entendibles.
+
+DECISIONES TECNICAS (por que y como)
+- Cypress para E2E y APIs: menor setup, una sola herramienta que ya conozco, y reporter HTML listo.
+- Selectores data-test en SauceDemo para estabilidad (evito clases frágiles).
+- Reporter cypress-mochawesome para evidenciar resultados sin pasos raros.
+
+ALCANCE CUBIERTO
+- API PetStore:
+  - POST /pet (creacion)
+  - GET /pet/{id} (consulta)
+  - PUT /pet (actualizacion a "sold")
+  - GET /pet/findByStatus?status=sold (busqueda por estatus)
+  
+- E2E SauceDemo:
+  - Login con standard_user/secret_sauce
+  - Agregar 2 productos al carrito
+  - Checkout (form) y confirmacion “THANK YOU FOR YOUR ORDER”
+
+LO QUE SALIO BIEN
+- Flujo E2E estable y rapido; selectores bastante solidos.
+- Tests de API sencillos, legibles, y con asserts puntuales.
+- Reportes HTML y evidencias (videos/screenshots) utiles para diagnostico.
+- Estructura basica de proyecto ordenada, facil de leer para otro dev/QA.
+
+HALLAZGOS / RIESGOS
+- PetStore presenta intermitentez (respuestas 5xx) por ser publico. Puede causar falsos negativos si no se reintenta.
+- Si se navega directo a checkout-step-two, SauceDemo redirige y se pierde estado del carrito.
+- Cobertura acotada al happy path; faltan casos negativos y validaciones de contrato (schema).
+- No hay cross-browser ni paralelizacion en CI (mantengo la cosa simple por ahora).
+
+LIMITACIONES CONSCIENTES (por nivel/tiempo)
+- No implementé Page Objects formales; el flujo es corto, pero si crece conviene hacerlo.
+- Sin estrategias avanzadas de data (fixtures semilla, limpieza post-test).
+- Retries minimos (confio en estabilidad de entorno, aunque no siempre pase).
+- Sin analisis estatico (ESLint/Prettier) ni hooks pre-commit, por simplicidad inicial.
+
+RECOMENDACIONES (corto plazo, priorizadas)
+1) Agregar retries/backoff en requests a PetStore para reducir flaky (usar configuracion de Cypress y, si hace falta, reintentos controlados).
+2) Incorporar pruebas negativas en API (400/404) y validar esquema con AJV u otra lib de JSON schema.
+3) Externalizar configuracion (urls, credenciales dummy, timeouts) via variables de entorno (CYPRESS_*).
+4) Centralizar selectores y/o crear Page Objects ligeros para mejorar manteniblidad del E2E.
+5) Etiquetar suites (api, e2e, smoke) para ejecucion selectiva en CI.
+
+RECOMENDACIONES (mediano plazo)
+- Formalizar Page Object Model o usar Testing Library para Cypress para mayor legibilidad.
+- Paralelizar y, si aporta valor, agregar matriz de navegadores en CI (Chrome/Firefox).
+- Integrar ESLint + Prettier y un pre-commit hook para estilo/coherencia del codigo.
+- Agregar pruebas de resiliencia (delays, timeouts controlados) y accesibilidad basica.
+- Mejorar estrategia de datos: fixtures deterministicas y limpieza si el entorno lo permite.
+
+LECCIONES APRENDIDAS (desde mi experiencia)
+- Simplificar primero ayuda a entregar valor rapido; luego iterar en robustoza.
+- Los reportes con evidencia visual acortan tiempo de analisis de fallos.
+- Entornos publicos requieren tolerancia a fallos intermitentes (no todo es “mi test está mal”).
+
+CIERRE
+- El objetivo del ejercicio se cumplio con una base profesional pero sencilla, acorde a mi experiencia (~3 anios). 
+- Con los ajustes propuestos (retries, negativos, schema y POM ligero) el set puede escalar sin complicar la ejecucion diaria.
